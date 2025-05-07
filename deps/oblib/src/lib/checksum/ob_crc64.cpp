@@ -419,6 +419,10 @@ for RHEL4 support (GCC 3 doesn't support this instruction) */
 #define crc32_sse42_quadword crc = __crc32cd(crc, *(int64_t*)buf); len -= 8, buf += 8
 #define crc32_sse42_byte crc = __crc32cb(crc, (uint8_t)*buf); len--, buf++
 #endif /* defined(__GNUC__) && defined(__x86_64__) */
+#elif defined(__loongarch_lp64)
+#include "larchintrin.h"
+#define crc32_sse42_byte crc = __crcc_w_b_w((uint8_t)*buf, crc); len--, buf++
+#define crc32_sse42_quadword crc = __crcc_w_d_w(*(int64_t*)buf, crc); len -= 8, buf += 8
 
 uint64_t crc64_sse42(uint64_t uCRC64, const char* buf, int64_t len)
 {
@@ -1145,6 +1149,9 @@ uint64_t crc64_sse42_dispatch(uint64_t crc, const char *buf, int64_t len)
     ob_crc64_sse42_func = &fast_crc64_sse42_manually;
     _OB_LOG(INFO, "Use manual crc32 table lookup for crc64 calculate");
     #endif
+  #elif defined(__loongarch_lp64)
+    ob_crc64_sse42_func = &fast_crc64_sse42_manually;
+    _OB_LOG(INFO, "Use manual crc32 table lookup for crc64 calculate");
   #else
     #error arch unsupported
   #endif

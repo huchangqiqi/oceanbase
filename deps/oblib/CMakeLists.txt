@@ -19,5 +19,9 @@ file(COPY . DESTINATION . FILES_MATCHING PATTERN "*.result")
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+if(${ARCHITECTURE} STREQUAL "loongarch64")
+    add_compile_options(-mlsx)
+endif()
+
 add_subdirectory(src)
 add_subdirectory(unittest EXCLUDE_FROM_ALL)
